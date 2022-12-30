@@ -99,3 +99,4 @@ ENV/
 .vscode
 
 _local
+.local
