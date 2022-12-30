@@ -51,6 +51,12 @@ git clone <url>
 
 ```bash
 cd <project>
+
+# create venv (optional)
+mkdir .local
+python -m venv .local/venv
+source .local/venv/bin/activate
+
 pip install -r requirements.txt
 ```
 
