@@ -7,9 +7,9 @@ __pycache__/
 *.so
 
 # KiCad
-source/kicad/main/main-backups/*
-source/kicad/main/_autosave-main.kicad_pcb
-source/kicad/main/*cache
+source/kicad/*/*-backups
+source/kicad/*/_autosave-*
+source/kicad/*/*cache
 
 # Distribution / packaging
 .Python
