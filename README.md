@@ -1,5 +1,58 @@
-TODO: replace `{}` and `<>` placeholders in this file.
-TODO: fill in TODOs
+# Template
+
+This is a template project for new faebryk projects. It contains a basic structure and some examples/templates to get you started.
+
+## Getting started
+First press `Use this template` button on the top of the page. 
+Then clone your new repo locally:
+```bash
+git clone <your repo>
+cd <your repo>
+```
+
+### Fill in the templates
+replace `{}` and `<>` placeholders and fill in TODOs in following files:
+- [README.md](README.md) (this file)
+- [pyproject.toml](pyproject.toml)
+- remove this header in this file (up until the first "TEMPLATE README START")
+
+### Setup your environment
+
+Make sure you have python3.11 installed
+```bash
+python --version
+```
+
+If you can't upgrade to python3.11, you will first need to make sure to have a working venv with python3.11 installed in it. This process will differ per OS.
+
+Make sure you have poetry installed
+```bash
+poetry --version
+```
+
+#### Option 1: Static faebryk
+```bash
+# inside your repo dir
+poetry install
+poetry shell # This activates the new venv
+```
+
+#### Option 2: Editable faebryk
+```bash
+# inside your repo dir
+./scripts/setup_local_faebryk.sh [branch]
+poetry shell
+```
+
+#### Test if it works
+```bash
+python src/<project_name>/main.py
+```
+
+# TEMPLATE README START
+---
+
+
 
 <div align="center">
 
