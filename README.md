@@ -33,6 +33,10 @@ poetry --version
 #### Option 1: Static faebryk
 ```bash
 # inside your repo dir
+
+#optional: pick alternative faebryk version, see poetry doc for more options
+poetry add git+https://github.com/faebryk/faebryk.git#<branch>
+
 poetry install
 poetry shell # This activates the new venv
 ```
