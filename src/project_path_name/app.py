@@ -7,9 +7,10 @@ from faebryk.core.core import Module
 from faebryk.library.has_overriden_name_defined import has_overriden_name_defined
 from faebryk.library.Net import Net
 from faebryk.libs.picker.picker import pick_part_recursively
-from project_name.library.my_library_module import MyLibraryModule
-from project_name.modules.my_application_module import MyApplicationModule
-from project_name.pickers import pick
+import faebryk.library._F as F
+from <project_path_name>.library.my_library_module import MyLibraryModule
+from <project_path_name>.modules.my_application_module import MyApplicationModule
+from <project_path_name>.pickers import pick
 
 logger = logging.getLogger(__name__)
 

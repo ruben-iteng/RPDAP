@@ -2,8 +2,8 @@
 
 In general be as accurate as possible when describing what you did, want or think. This will help speed things up and avoid misunderstandings.
 
-If you have concrete issues you can place them [here#TODO]().
+If you have concrete issues you can place them [here](https://github.com/<owner>/<project>/issues).
 
-[Pull requests#TODO]() are welcome too!
+[Pull requests](https://github.com/<owner>/<project>/pulls) are welcome too!
 
 General discussion is on faebryk Discord.
