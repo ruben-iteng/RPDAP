@@ -3,27 +3,27 @@ requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.urls]
-"Bug Tracker" = "https://github.com/<owner>/<project>/issues"
+"Bug Tracker" = "https://github.com/TEMPLATE_VAR_github/issues"
 
 
 [tool.poetry]
-name = "<project_name>"
-version = "<version>"
-authors = [<authors>]
+authors = ["TEMPLATE_VAR_author"]
+name = "TEMPLATE_VAR_project_name"
+version = "0.0.1"
 readme = ["README.md", "LICENSE"]
-license = "<licence>"
-description = "<short_project_description>"
+license = "TEMPLATE_VAR_license"
+description = "TEMPLATE_VAR_short_description"
 classifiers = [
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
 ]
-repository = "https://github.com/<owner>/<project>"
-homepage = "https://github.com/<owner>/<project>"
+repository = "https://github.com/TEMPLATE_VAR_github"
+homepage = "https://github.com/TEMPLATE_VAR_github"
 
 [tool.poetry.dependencies]
 python = "^3.12,<3.13"                                                        # max allowed version by scipy
-faebryk = { git = "https://github.com/faebryk/faebryk.git", branch = "<faebryk_branch>" }
+faebryk = { git = "https://github.com/faebryk/faebryk.git", branch = "main" }
 typer = { version = "^0.9.0", extras = ["all"] }
 
 [tool.poetry.group.dev.dependencies]
@@ -136,6 +136,7 @@ per-file-ignores = {}
 # Allow unused variables when underscore-prefixed.
 dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
 
-[tool.ruff.mccabe]
+
+[tool.ruff.lint.mccabe]
 # Unlike Flake8, default to a complexity level of 10.
 max-complexity = 10

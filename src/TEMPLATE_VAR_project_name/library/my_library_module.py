@@ -15,23 +15,25 @@ logger = logging.getLogger(__name__)
 # For typical library module examples check out faebryk.library
 
 
+# TIP: To (quickly) add more library modules use
+# `python -m faebryk.tools.libadd module <name>`
+
+
 class MyLibraryModule(Module):
     def __init__(self) -> None:
         super().__init__()
 
         class _NODEs(Module.NODES()):
-            ...
-
-        self.NODEs = _NODEs(self)
+            pass
 
         class _IFs(Module.IFS()):
-            ...
-
-        self.IFs = _IFs(self)
+            pass
 
         class _PARAMs(Module.PARAMS()):
-            ...
+            pass
 
+        self.NODEs = _NODEs(self)
+        self.IFs = _IFs(self)
         self.PARAMs = _PARAMs(self)
 
         # self.add_trait()

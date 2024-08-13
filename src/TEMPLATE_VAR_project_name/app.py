@@ -3,14 +3,10 @@
 
 import logging
 
-from faebryk.core.core import Module
-from faebryk.library.has_overriden_name_defined import has_overriden_name_defined
-from faebryk.library.Net import Net
-from faebryk.libs.picker.picker import pick_part_recursively
 import faebryk.library._F as F
-from <project_path_name>.library.my_library_module import MyLibraryModule
-from <project_path_name>.modules.my_application_module import MyApplicationModule
-from <project_path_name>.pickers import pick
+from faebryk.core.core import Module
+from TEMPLATE_VAR_project_name.library.my_library_module import MyLibraryModule
+from TEMPLATE_VAR_project_name.modules.my_application_module import MyApplicationModule
 
 logger = logging.getLogger(__name__)
 
@@ -31,13 +27,12 @@ class MyApp(Module):
         class _NODEs(Module.NODES()):
             submodule = MyApplicationModule()
             my_part = MyLibraryModule()
-            ...
-
-        self.NODEs = _NODEs(self)
+            pass
 
         class _PARAMs(Module.PARAMS()):
-            ...
+            pass
 
+        self.NODEs = _NODEs(self)
         self.PARAMs = _PARAMs(self)
 
         # net names ----------------------------------
@@ -46,8 +41,7 @@ class MyApp(Module):
             # "gnd": ...power.IFs.lv,
         }
         for net_name, mif in nets.items():
-            net = Net()
-            net.add_trait(has_overriden_name_defined(net_name))
+            net = F.Net.with_name(net_name)
             net.IFs.part_of.connect(mif)
 
         # parametrization ----------------------------
@@ -55,6 +49,3 @@ class MyApp(Module):
         # specialize
 
         # set global params
-
-        # part picking -------------------------------
-        pick_part_recursively(self, pick)

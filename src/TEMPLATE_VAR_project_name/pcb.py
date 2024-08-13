@@ -13,5 +13,4 @@ E.g placing components, layer switching, mass renaming, etc.
 """
 
 
-def transform_pcb(transformer: PCB_Transformer):
-    ...
+def transform_pcb(transformer: PCB_Transformer): ...

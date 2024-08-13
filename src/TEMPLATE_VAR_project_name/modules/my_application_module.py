@@ -19,18 +19,16 @@ class MyApplicationModule(Module):
 
         class _NODEs(Module.NODES()):
             submodule = MyApplicationModuleSubmodule()
-            ...
-
-        self.NODEs = _NODEs(self)
+            pass
 
         class _IFs(Module.IFS()):
-            ...
-
-        self.IFs = _IFs(self)
+            pass
 
         class _PARAMs(Module.PARAMS()):
-            ...
+            pass
 
+        self.IFs = _IFs(self)
+        self.NODEs = _NODEs(self)
         self.PARAMs = _PARAMs(self)
 
         # self.add_trait()
@@ -43,18 +41,16 @@ class MyApplicationModuleSubmodule(Module):
         super().__init__()
 
         class _NODEs(Module.NODES()):
-            ...
-
-        self.NODEs = _NODEs(self)
+            pass
 
         class _IFs(Module.IFS()):
-            ...
-
-        self.IFs = _IFs(self)
+            pass
 
         class _PARAMs(Module.PARAMS()):
-            ...
+            pass
 
+        self.IFs = _IFs(self)
+        self.NODEs = _NODEs(self)
         self.PARAMs = _PARAMs(self)
 
         # self.add_trait()
