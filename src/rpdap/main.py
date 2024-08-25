@@ -23,10 +23,12 @@ from faebryk.libs.app.pcb import apply_design
 from faebryk.libs.logging import setup_basic_logging
 from faebryk.libs.picker.jlcpcb.pickers import add_jlcpcb_pickers
 from faebryk.libs.picker.picker import pick_part_recursively
-from TEMPLATE_VAR_project_name.app import MyApp
-from TEMPLATE_VAR_project_name.pcb import transform_pcb
-from TEMPLATE_VAR_project_name.pickers import add_app_pickers
+from rich.traceback import install
 from typing_extensions import Annotated
+
+from rpdap.app import MyApp
+from rpdap.pcb import transform_pcb
+from rpdap.pickers import add_app_pickers
 
 # logging settings
 logger = logging.getLogger(__name__)
@@ -46,6 +48,12 @@ def main(
         bool, typer.Option(help="Export project parameters to a file")
     ] = False,
 ):
+    # rich traceback settings --------------------------------
+    install(
+        width=550,
+        show_locals=True,
+    )
+
     # paths --------------------------------------------------
     root = Path(__file__).parent.parent.parent
     kicad_prj_path = root.joinpath("source")

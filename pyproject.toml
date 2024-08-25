@@ -3,27 +3,27 @@ requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.urls]
-"Bug Tracker" = "https://github.com/TEMPLATE_VAR_github/issues"
+"Bug Tracker" = "https://github.com/ruben-iteng/RPDAP/issues"
 
 
 [tool.poetry]
-authors = ["TEMPLATE_VAR_author"]
-name = "TEMPLATE_VAR_project_name"
+authors = ["Ruben Baldewsing <94007802+ruben-iteng@users.noreply.github.com>"]
+name = "rpdap"
 version = "0.0.1"
 readme = ["README.md", "LICENSE"]
-license = "TEMPLATE_VAR_license"
-description = "TEMPLATE_VAR_short_description"
+license = "MIT"
+description = "RP2040 CMSIS-DAP debugger as hardware module"
 classifiers = [
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
 ]
-repository = "https://github.com/TEMPLATE_VAR_github"
-homepage = "https://github.com/TEMPLATE_VAR_github"
+repository = "https://github.com/ruben-iteng/RPDAP"
+homepage = "https://github.com/ruben-iteng/RPDAP"
 
 [tool.poetry.dependencies]
 python = "^3.12,<3.13"                                                        # max allowed version by scipy
-faebryk = { git = "https://github.com/faebryk/faebryk.git", branch = "main" }
+faebryk = {path = "../../faebryk", develop = true} #{ git = "https://github.com/atopile/faebryk.git", branch = "main" }
 typer = { version = ">=0.9,<0.13", extras = ["all"] }
 
 [tool.poetry.group.dev.dependencies]
