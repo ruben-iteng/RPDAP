@@ -1,98 +1,31 @@
 # This file is part of the faebryk project
 # SPDX-License-Identifier: MIT
 
+
 import logging
 
-import faebryk.library._F as F
-from faebryk.core.core import Module
-from faebryk.exporters.pcb.layout.absolute import LayoutAbsolute
+import faebryk.library._F as F  # noqa: F401
+from faebryk.core.module import Module
+from faebryk.exporters.pcb.layout.extrude import LayoutExtrude
 from faebryk.exporters.pcb.layout.typehierarchy import LayoutTypeHierarchy
-
-from rpdap.modules.MountingSlot import MountingSlot
-from rpdap.modules.SFPEdgeConnector import SFPEdgeConnector
+from faebryk.libs.library import L  # noqa: F401
+from faebryk.libs.units import P  # noqa: F401
 
 logger = logging.getLogger(__name__)
 
 
 class RPDAPModule(Module):
-    @classmethod
-    def NODES(cls):
-        # submodules
-        class _NODES(super().NODES()):
-            cardedge_connector = SFPEdgeConnector()
-            keys = MountingSlot()
+    usb_connector = L.f_field(F.Header)(horizonal_pin_count=4, vertical_pin_count=1)
+    data_connector = L.f_field(F.Header)(horizonal_pin_count=5, vertical_pin_count=2)
 
-        return _NODES
+    usb: F.USB2_0
+    swd: F.SWD
+    gnd_detect: F.ElectricLogic
+    uart: F.UART_Base
+    device_power: F.ElectricPower
 
-    @classmethod
-    def PARAMS(cls):
-        # parameters
-        class _PARAMS(super().PARAMS()):
-            pass
-
-        return _PARAMS
-
-    @classmethod
-    def IFS(cls):
-        # interfaces
-        class _IFS(super().IFS()):
-            usb = F.USB2_0()
-            swd = F.SWD()
-            gnd_detect = F.Electrical()
-            uart = F.UART_Base()
-
-        return _IFS
-
-    def __init__(self):
-        # boilerplate
-        super().__init__()
-        self.IFs = self.IFS()(self)
-        self.PARAMs = self.PARAMS()(self)
-        self.NODEs = self.NODES()(self)
-
-        # aliases
-        vbus = self.IFs.usb.IFs.usb_if.IFs.buspower
-        gnd = vbus.IFs.lv
-
-        # connections
-        # power
-        for gnd_pin in [0, 9, 10, 13, 16, 19]:
-            gnd.connect(self.NODEs.cardedge_connector.IFs.unnamed[gnd_pin])
-        for power_pin in [14, 15]:
-            vbus.IFs.hv.connect(self.NODEs.cardedge_connector.IFs.unnamed[power_pin])
-        # swd
-        self.IFs.swd.IFs.clk.IFs.signal.connect(
-            self.NODEs.cardedge_connector.IFs.unnamed[18]
-        )
-        self.IFs.swd.IFs.dio.IFs.signal.connect(
-            self.NODEs.cardedge_connector.IFs.unnamed[19]
-        )
-        self.IFs.swd.IFs.swo.IFs.signal.connect(
-            self.NODEs.cardedge_connector.IFs.unnamed[1]
-        )
-        self.IFs.swd.IFs.reset.IFs.signal.connect(
-            self.NODEs.cardedge_connector.IFs.unnamed[2]
-        )
-        # uart
-        self.IFs.uart.IFs.tx.IFs.signal.connect(
-            self.NODEs.cardedge_connector.IFs.unnamed[3]
-        )
-        self.IFs.uart.IFs.rx.IFs.signal.connect(
-            self.NODEs.cardedge_connector.IFs.unnamed[4]
-        )
-        # gnd detect
-        self.IFs.gnd_detect.connect(self.NODEs.cardedge_connector.IFs.unnamed[5])
-
-        # usb
-        self.IFs.usb.IFs.usb_if.IFs.d.IFs.p.connect(
-            self.NODEs.cardedge_connector.IFs.unnamed[12]
-        )
-        self.IFs.usb.IFs.usb_if.IFs.d.IFs.n.connect(
-            self.NODEs.cardedge_connector.IFs.unnamed[11]
-        )
-
-        # traits
-
+    @L.rt_field
+    def has_defined_layout(self):
         # pcb layout
         Point = F.has_pcb_position.Point
         L = F.has_pcb_position.layer_type
@@ -100,12 +33,62 @@ class RPDAPModule(Module):
 
         layouts = [
             LVL(
-                mod_type=MountingSlot,
-                layout=LayoutAbsolute(Point((0, 0, 0, L.NONE))),
-            ),
-            LVL(
-                mod_type=SFPEdgeConnector,
-                layout=LayoutAbsolute(Point((0, 45, 0, L.NONE))),
+                mod_type=F.Header,
+                layout=LayoutExtrude(
+                    base=Point((0, (2.54 / 2), 0, L.NONE)),
+                    vector=(0, 50 - (1.5 * 2.54), 0),
+                    reverse_order=True,
+                ),
             ),
         ]
-        self.add_trait(F.has_pcb_layout_defined(LayoutTypeHierarchy(layouts)))
+        return F.has_pcb_layout_defined(LayoutTypeHierarchy(layouts))
+
+    def __preinit__(self):
+        # ----------------------------------------
+        #               Aliasses
+        # ----------------------------------------
+        vbus = self.usb.usb_if.buspower
+
+        # ----------------------------------------
+        #            parametrization
+        # ----------------------------------------
+        self.usb_connector.pin_pitch.merge(2.54 * P.mm)
+        self.data_connector.pin_pitch.merge(2.54 * P.mm)
+        self.usb_connector.spacer_height.merge(F.Range.from_center_rel(8.5 * P.mm, 0.1))
+        self.data_connector.spacer_height.merge(
+            F.Range.from_center_rel(8.5 * P.mm, 0.1)
+        )
+        self.usb_connector.pin_type.merge(F.Header.PinType.FEMALE)
+        self.data_connector.pin_type.merge(F.Header.PinType.FEMALE)
+        self.usb_connector.angle.merge(F.Header.Angle.STRAIGHT)
+        self.data_connector.angle.merge(F.Header.Angle.STRAIGHT)
+
+        # ----------------------------------------
+        #               Connections
+        # ----------------------------------------
+        F.ElectricLogic.connect_all_module_references(self, gnd_only=True)
+        F.ElectricLogic.connect_all_module_references(
+            self, exclude=[self.usb]
+        ).voltage.merge(F.Range(1.7 * P.V, 5.5 * P.V))
+
+        # USB header
+        # power
+        vbus.lv.connect(self.usb_connector.contact[3])
+        vbus.hv.connect(self.usb_connector.contact[0])
+        # usb
+        self.usb.usb_if.d.n.signal.connect(self.usb_connector.contact[1])
+        self.usb.usb_if.d.p.signal.connect(self.usb_connector.contact[2])
+
+        # target header
+        # data connector UART connections
+        self.uart.rx.signal.connect(self.data_connector.contact[4])
+        self.uart.tx.signal.connect(self.data_connector.contact[6])
+        # data connector SWD connections
+        self.swd.clk.signal.connect(self.data_connector.contact[3])
+        self.swd.dio.signal.connect(self.data_connector.contact[1])
+        self.swd.swo.signal.connect(self.data_connector.contact[5])
+        self.swd.reset.signal.connect(self.data_connector.contact[9])
+        # data connector GND detect connections
+        self.gnd_detect.signal.connect(self.data_connector.contact[8])
+        self.device_power.lv.connect(self.data_connector.contact[2])
+        self.device_power.hv.connect(self.data_connector.contact[0])

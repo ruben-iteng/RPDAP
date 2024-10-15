@@ -103,3 +103,6 @@ ENV/
 
 _local
 .local
+
+# faebryk
+build/cache/

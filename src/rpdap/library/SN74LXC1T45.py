@@ -3,20 +3,10 @@
 
 import logging
 
-from faebryk.core.core import Module
-from faebryk.library.can_attach_to_footprint_via_pinmap import (
-    can_attach_to_footprint_via_pinmap,
-)
-from faebryk.library.can_be_decoupled import can_be_decoupled
-from faebryk.library.ElectricLogic import ElectricLogic
-from faebryk.library.ElectricPower import ElectricPower
-from faebryk.library.can_bridge_defined import can_bridge_defined
-from faebryk.library.has_datasheet_defined import has_datasheet_defined
-from faebryk.library.has_designator_prefix_defined import has_designator_prefix_defined
-from faebryk.library.KicadFootprint import KicadFootprint
-from faebryk.library.Range import Range
+import faebryk.library._F as F
+from faebryk.core.module import Module
+from faebryk.libs.library import L
 from faebryk.libs.units import P
-from faebryk.libs.util import times
 
 logger = logging.getLogger(__name__)
 
@@ -35,70 +25,54 @@ class SN74LXC1T45(Module):
     A.
     """
 
-    @classmethod
-    def NODES(cls):
-        # submodules
-        class _NODES(super().NODES()):
-            pass
+    # ----------------------------------------
+    #     modules, interfaces, parameters
+    # ----------------------------------------
+    dir = F.ElectricLogic()
+    io = L.list_field(2, F.ElectricLogic)
+    power = L.list_field(2, F.ElectricPower)
 
-        return _NODES
+    # ----------------------------------------
+    #                 traits
+    # ----------------------------------------
+    @L.rt_field
+    def can_bridge(self):
+        return F.can_bridge_defined(self.io[0], self.io[1])
 
-    @classmethod
-    def PARAMS(cls):
-        # parameters
-        class _PARAMS(super().PARAMS()):
-            pass
-
-        return _PARAMS
-
-    @classmethod
-    def IFS(cls):
-        # interfaces
-        class _IFS(super().IFS()):
-            dir = ElectricLogic()
-            io = times(2, ElectricLogic)
-            power = times(2, ElectricPower)
-
-        return _IFS
-
-    def __init__(self):
-        # boilerplate
-        super().__init__()
-        self.IFs = self.IFS()(self)
-        self.PARAMs = self.PARAMS()(self)
-        self.NODEs = self.NODES()(self)
-
-        # parameters
-        for pwr in self.IFs.power:
-            pwr.PARAMs.voltage.merge(Range(1.1 * P.V, 5.5 * P.V))
-            pwr.get_trait(can_be_decoupled).decouple()
-
-        # connections
-        self.IFs.power[0].IFs.lv.connect(self.IFs.power[1].IFs.lv)
-
-        # traits
-        self.add_trait(can_bridge_defined(self.IFs.io[0], self.IFs.io[1]))
-
-        self.add_trait(
-            has_datasheet_defined("https://www.ti.com/lit/ds/symlink/sn74lxc1t45.pdf")
+    @L.rt_field
+    def datasheet(self):
+        return F.has_datasheet_defined(
+            "https://www.ti.com/lit/ds/symlink/sn74lxc1t45.pdf"
         )
 
-        self.add_trait(has_designator_prefix_defined("U"))
+    designator_prefix = L.f_field(F.has_designator_prefix_defined)(
+        F.has_designator_prefix.Prefix.U
+    )
 
-        self.add_trait(
-            can_attach_to_footprint_via_pinmap(
-                pinmap={
-                    "1": self.IFs.power[0].IFs.hv,
-                    "2": self.IFs.power[0].IFs.lv,
-                    "3": self.IFs.io[0].IFs.signal,
-                    "4": self.IFs.io[1].IFs.signal,
-                    "5": self.IFs.dir.IFs.signal,
-                    "6": self.IFs.power[1].IFs.hv,
-                }
-            )
-        ).attach(
-            KicadFootprint(
+    @L.rt_field
+    def can_attach_to_footprint(self):
+        return F.can_attach_to_footprint_via_pinmap(
+            pinmap={
+                "1": self.power[0].hv,
+                "2": self.power[0].lv,
+                "3": self.io[0].signal,
+                "4": self.io[1].signal,
+                "5": self.dir.signal,
+                "6": self.power[1].hv,
+            }
+        )
+
+    def __preinit__(self):
+        self.can_attach_to_footprint.attach(
+            F.KicadFootprint(
                 kicad_identifier="Package_TO_SOT_SMD:SOT-23-6",
                 pin_names=["1", "2", "3", "4", "5", "6"],
             )
         )
+
+        for pwr in self.power:
+            pwr.voltage.merge(F.Range(1.1 * P.V, 5.5 * P.V))
+            pwr.get_trait(F.can_be_decoupled).decouple()
+
+        # connections
+        self.power[0].lv.connect(self.power[1].lv)
