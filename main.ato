@@ -1,0 +1,156 @@
+#pragma experiment("BRIDGE_CONNECT")
+#pragma experiment("FOR_LOOP")
+import Electrical
+import ElectricPower
+import ElectricLogic
+import Resistor
+import UART_Base
+import USB2_0
+import SWD
+
+from "atopile/raspberry-rp2040/raspberry-rp2040.ato" import Raspberry_Pi_RP2040
+from "atopile/usb-connectors/usb-connectors.ato" import USB2_0TypeCHorizontalConnector
+from "atopile/indicator-leds/indicator-leds.ato" import LEDIndicatorRed
+from "atopile/indicator-leds/indicator-leds.ato" import LEDIndicatorGreen
+from "atopile/indicator-leds/indicator-leds.ato" import LEDIndicatorBlue
+from "ruben-iteng/debug-interfaces/debug-interfaces.ato" import ARM_CORTEX_M_DEBUG_HEADER
+from "ruben-iteng/ldos/ldos.ato" import LDO_5V_to_3V3
+
+from "wuxi-aip74lvc1t45.ato" import Wuxi_I_core_Elec_AiP74LVC1T45GB236_TR_driver
+from "uart_connector.ato" import UARTConnectorVertical
+
+from "parts/Sinhoo_SMTSO1630MTJ/Sinhoo_SMTSO1630MTJ.ato" import Sinhoo_SMTSO1630MTJ_package
+
+module App:
+    """
+    RPDAP PCBA designed for Standalone/desktop use.
+    """
+    # --- Components ---
+    rpdap = new RPDAP
+    usb_connector = new USB2_0TypeCHorizontalConnector
+    debug_connector = new ARM_CORTEX_M_DEBUG_HEADER
+    uart_connector = new UARTConnectorVertical
+    standoff = new Sinhoo_SMTSO1630MTJ_package[4]
+    power_indicator = new LEDIndicatorRed
+    vcp_indicator = new LEDIndicatorBlue
+
+    # --- Connections ---
+    rpdap.usb ~ usb_connector.usb
+    rpdap.swd ~ debug_connector.swd
+    rpdap.gnd_detect ~ debug_connector.ground_detect
+    rpdap.device_power ~ debug_connector.reference
+    rpdap.device_power ~ uart_connector.reference
+    rpdap.uart ~ uart_connector.uart
+    power_indicator.power ~ rpdap._power_3v3
+    rpdap.mcu.gpio[2].line ~> vcp_indicator ~> rpdap.mcu.gpio[16].reference.lv
+
+    for so in standoff:
+        so.1 ~ rpdap._power_3v3.lv
+
+module RPDAP:
+    """
+    RPDAP module with layout for inclusion in your own design.
+    A RP2040 based USB SWD and UART interface for flashing and debugging.
+    CMSIS-DAP compatible.
+    """
+    # --- Components ---
+    mcu = new Raspberry_Pi_RP2040
+    level_shifter = new Wuxi_I_core_Elec_AiP74LVC1T45GB236_TR_driver[6]
+    ldo = new LDO_5V_to_3V3
+
+    # -- External interfaces --
+    usb = new USB2_0
+    usb.required = True
+    uart = new UART_Base
+    uart.required = True
+    swd = new SWD
+    swd.required = True
+    gnd_detect = new ElectricLogic
+    # gnd_detect.line.required = True
+    device_power = new ElectricPower
+    device_power.required = True
+
+    # --- Internal interfaces ---
+    # Power rails
+    _power_vbus = new ElectricPower
+    _power_3v3 = new ElectricPower
+
+    # -- Connections --
+    # USB-C provides VBUS (5V) and D+/D-
+    usb.usb_if.buspower ~ _power_vbus
+    _power_vbus ~ ldo.power_in
+    ldo.power_out ~ _power_3v3
+    mcu.power ~ _power_3v3
+
+    mcu._factory_test_enable ~ _power_3v3.lv # TODO: remove if fixed upstream
+
+    # USB data
+    usb ~ mcu.usb
+
+    # Level shifters share references
+    for ls in level_shifter:
+        ls.power_a ~ _power_3v3
+        ls.power_b ~ swd.reference_shim
+
+    # Direction of the level shifters
+    #           gpio[12]: SWDIO (bidirectional, DIR via GPIO9)
+    #           gpio[11]: SWCLK (A->B)
+    #           gpio[14]: SWO   (B->A)
+    #           gpio[15]: nRESET (A->B)
+    # uart[0].tx gpio[4]: UART TX (A->B)
+    # uart[0].rx gpio[5]: UART RX (B->A)
+
+    # SWDIO
+    mcu.gpio[12] ~ level_shifter[0].a
+    level_shifter[0].b ~ swd.dio
+    mcu.gpio[9] ~ level_shifter[0].dir
+
+    # SWCLK
+    mcu.gpio[11] ~ level_shifter[1].a
+    level_shifter[1].b ~ swd.clk
+    # DIR = High (A->B)
+    level_shifter[1].dir.line ~ _power_3v3.hv
+
+    # SWO
+    mcu.gpio[14] ~ level_shifter[2].a
+    level_shifter[2].b ~ swd.swo
+    # DIR = Low (B->A)
+    level_shifter[2].dir.line ~ _power_3v3.lv
+
+    # nRESET
+    mcu.gpio[15] ~ level_shifter[3].a
+    level_shifter[3].b ~ swd.reset
+    # DIR = High (A->B)
+    level_shifter[3].dir.line ~ _power_3v3.hv
+
+    # UART0 TX (MCU -> target)
+    mcu.uart.tx ~ level_shifter[4].a
+    level_shifter[4].b ~ uart.tx
+    # DIR = High (A->B)
+    level_shifter[4].dir.line ~ _power_3v3.hv
+
+    # UART0 RX (target -> MCU)
+    mcu.uart.rx ~ level_shifter[5].a
+    level_shifter[5].b ~ uart.rx
+    # DIR = Low (B->A)
+    level_shifter[5].dir.line ~ _power_3v3.lv
+
+    # GND detect on GPIO3 with pull-up on MCU side; sense target ground
+    gnd_detect_pull_up_resistor = new Resistor
+    gnd_detect_pull_up_resistor.resistance = 100kohm +/- 5%
+    gnd_detect_pull_up_resistor.package = "0402"
+    mcu.gpio[3].line ~> gnd_detect_pull_up_resistor ~> _power_3v3.hv
+    mcu.gpio[3].reference ~ _power_3v3
+    mcu.gpio[3] ~ gnd_detect
+
+    # --- Net renaming ---
+    usb.usb_if.buspower.hv.override_net_name = "VBUS"
+    usb.usb_if.buspower.lv.override_net_name = "GND"
+    swd.dio.line.override_net_name = "SWDIO"
+    swd.clk.line.override_net_name = "SWCLK"
+    swd.swo.line.override_net_name = "SWO"
+    swd.reset.line.override_net_name = "nRESET"
+    uart.tx.line.override_net_name = "UART_TX"
+    uart.rx.line.override_net_name = "UART_RX"
+    gnd_detect.line.override_net_name = "GND_DETECT"
+    device_power.override_net_name = "DEVICE_PWR"
