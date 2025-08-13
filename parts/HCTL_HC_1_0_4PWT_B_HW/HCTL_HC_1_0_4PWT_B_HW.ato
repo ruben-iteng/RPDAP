@@ -1,0 +1,22 @@
+#pragma experiment("TRAITS")
+import has_designator_prefix
+import has_part_picked
+import is_atomic_part
+import is_auto_generated
+
+component HCTL_HC_1_0_4PWT_B_HW_package:
+    # This trait marks this file as auto-generated
+    # If you want to manually change it, remove the trait
+    trait is_auto_generated<system="ato_part", source="easyeda:C19270571", date="2025-08-12T12:17:19.812199+00:00", checksum="9fca27e71a5edf939fa3ea37ca7b7fe487608a8b6cfd54cdda3f608ee2a52ae9">
+
+    trait is_atomic_part<manufacturer="HCTL", partnumber="HC-1.0-4PWT-B-HW", footprint="CONN-SMD_4P-P1.00_HCTL_HC-1.0-4PWT.kicad_mod", symbol="HC-1.0-4PWT-B-HW.kicad_sym", model="CONN-SMD_4P-P1.00_HCTL_HC-1.0-4PWT.step">
+    trait has_part_picked::by_supplier<supplier_id="lcsc", supplier_partno="C19270571", manufacturer="HCTL", partno="HC-1.0-4PWT-B-HW">
+    trait has_designator_prefix<prefix="U">
+
+    # pins
+    pin 6
+    pin 5
+    pin 4
+    pin 3
+    pin 2
+    pin 1
