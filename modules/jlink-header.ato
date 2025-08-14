@@ -1,0 +1,45 @@
+import ElectricPower
+import ElectricLogic
+import SWD
+
+from "parts/Megastar_ZX_IDC2_54_2_10PWZ/Megastar_ZX_IDC2_54_2_10PWZ.ato" import Megastar_ZX_IDC2_54_2_10PWZ_package
+
+module JLinkHeader:
+    """
+    2x10 pin IDC male header with JLink pinout
+    """
+    package = new Megastar_ZX_IDC2_54_2_10PWZ_package
+
+    # --- External interfaces ---
+    swd = new SWD
+    """SWD debug interface"""
+    swd.required = True
+    power_5v = new ElectricPower
+    """Power from USB to target"""
+    reference = new ElectricPower
+    """Reference power for logic signals from target"""
+    reference.required = True
+    """
+    For target to detect the pressence of a debugger.
+    Not on the official JLink header.
+    """
+    ground_detect = new ElectricLogic
+    ground_detect.required = True
+
+    # --- Internal connections ---
+    power_5v.lv ~ reference.lv
+    swd.reference_shim ~ reference
+
+    # --- Package connections ---
+    reference.hv ~ package.1
+    swd.dio.line ~ package.7
+    swd.clk.line ~ package.9
+    swd.swo.line ~ package.13
+    swd.reset.line ~ package.15
+    power_5v.hv ~ package.19
+    power_5v.lv ~ package.4
+    power_5v.lv ~ package.6
+    power_5v.lv ~ package.8
+    power_5v.lv ~ package.10
+    power_5v.lv ~ package.12
+    ground_detect.line ~ package.12

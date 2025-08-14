@@ -1,49 +1,39 @@
 <div align="center">
 
-# rpdap
+# RPDAP
 
-<img height=300 title="Render front" src="./build/visuals/pcba.svg"/>
+<img height=300 title="3D render" src="./"/>
 <br/>
 
-RP2040 CMSIS-DAP debugger hardware module
+CMSIS-DAP debugger hardware based on a Raspberry Pi RP2040 microcontroller.
 
-[![Version](https://img.shields.io/github/v/tag/ruben-iteng/RPDAP)](https://github.com/ruben-iteng/RPDAP/releases) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/ruben-iteng/RPDAP/blob/main/LICENSE) [![Pull requests open](https://img.shields.io/github/issues-pr/ruben-iteng/RPDAP)](https://github.com/ruben-iteng/RPDAP/pulls) [![Issues open](https://img.shields.io/github/issues/ruben-iteng/RPDAP)](https://github.com/ruben-iteng/RPDAP/issues) [![GitHub commit activity](https://img.shields.io/github/commit-activity/m/ruben-iteng/RPDAP)](https://github.com/ruben-iteng/RPDAP/commits/main) [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![Version](https://img.shields.io/github/v/tag/ruben-iteng/RPDAP)](https://github.com/ruben-iteng/RPDAP/releases) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/ruben-iteng/RPDAP/blob/main/LICENSE) [![Pull requests open](https://img.shields.io/github/issues-pr/ruben-iteng/RPDAP)](https://github.com/ruben-iteng/RPDAP/pulls) [![Issues open](https://img.shields.io/github/issues/ruben-iteng/RPDAP)](https://github.com/ruben-iteng/RPDAP/issues)
 
 </div>
 
 ## About
 
-This is a RP2040 based CMSIS-DAP debugger to be used as a plug-in module for test and provisioning devices.
-It is designed to be used with the [free-dap](https://github.com/ruben-iteng/free-dap) firmware.
+This project contains the hardware designs for a RP2040 based CMSIS-DAP debugger running the [free-dap](https://github.com/ruben-iteng/free-dap) firmware.
 
-This project is build with the open-source EDA [faebryk](https://github.com/atopile/faebryk).
+This project is build with [atopile](https://atopile.io).
 
 ### Features
 
-- size: 20x50mm
-- status LEDs for VCP and DAP status
-- level shifted target interface (swd, uart)
-    - 1.2-5.5V target voltage
+- USB interface (data and power)
+- status LEDs for VCP (Virtual COM Port), DAP, and power.
+- level shifted target interface (SWD, UART)
+  - 1.2-5.5V target voltage
 
+#### Layouts
 
-## Working with the source files
+There are various layouts available:
 
-See [here](./docs/development.md) for the instructions on how to install and edit this project.
+| ![No layout](./mock/no_layout.png)  | ![Basic layout](./mock/basic_layout.png)  |
+|---------------------------------------|---------------------------------------|
+| No layout (for doing you own layout)                   | Basic layout without connectors (for inclusion in your own design/PCBA) |
+| ![Stick shaped layout](./mock/stick_shaped_layout.png)  | ![JLink Base Compact compatible layout](./mock/jlink_base_compact_compatible_layout.png)  |
+| Stick shaped layout with female USB Type-C connector | JLink Base Compact compatible layout (for use with JLink Base Compact) |
 
-## Building
+### Firmware
 
-If you want to physicaly build this project, you can find the build instructions [here](./docs/build_instructions.md).
-
-## Contributing
-
-If you want to share your alterations, improvements, or add bugfixes to this project, please take a look at the [contributing guidelines](./docs/CONTRIBUTING.md).
-
-## Community Support
-
-Community support is provided via Discord; see the Resources below for details.
-
-### Resources
-
-- Source Code: [Github](https://github.com/ruben-iteng/RPDAP)
-- Chat: Real-time chat happens in faebryk's Discord Server (show-off). Use this Discord [Invite](https://discord.gg/95jYuPmnUW) to register
-- Issues: [Issues](https://github.com/ruben-iteng/RPDAP/issues)
+The firmware for the debugger is available in the [free-dap](https://github.com/ruben-iteng/free-dap) repository.

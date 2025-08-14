@@ -16,8 +16,10 @@ from "atopile/indicator-leds/indicator-leds.ato" import LEDIndicatorBlue
 from "ruben-iteng/debug-interfaces/debug-interfaces.ato" import ARM_CORTEX_M_DEBUG_HEADER
 from "ruben-iteng/ldos/ldos.ato" import LDO_5V_to_3V3
 
-from "wuxi-aip74lvc1t45.ato" import Wuxi_I_core_Elec_AiP74LVC1T45GB236_TR_driver
-from "uart_connector.ato" import UARTConnectorVertical
+from "modules/wuxi-aip74lvc1t45.ato" import Wuxi_I_core_Elec_AiP74LVC1T45GB236_TR_driver
+from "modules/uart_connector.ato" import UARTConnectorVertical
+from "modules/uart_connector.ato" import UARTConnectorHorizontal
+from "modules/jlink-header.ato" import JLinkHeader
 
 from "parts/Sinhoo_SMTSO1630MTJ/Sinhoo_SMTSO1630MTJ.ato" import Sinhoo_SMTSO1630MTJ_package
 
@@ -38,8 +40,8 @@ module App:
     rpdap.usb ~ usb_connector.usb
     rpdap.swd ~ debug_connector.swd
     rpdap.gnd_detect ~ debug_connector.ground_detect
-    rpdap.device_power ~ debug_connector.reference
-    rpdap.device_power ~ uart_connector.reference
+    rpdap.target_power_reference ~ debug_connector.reference
+    rpdap.target_power_reference ~ uart_connector.reference
     rpdap.uart ~ uart_connector.uart
     power_indicator.power ~ rpdap._power_3v3
     rpdap.mcu.gpio[2].line ~> vcp_indicator ~> rpdap.mcu.gpio[16].reference.lv
@@ -47,9 +49,39 @@ module App:
     for so in standoff:
         so.1 ~ rpdap._power_3v3.lv
 
-module RPDAP:
+module JLinkBaseMiniLayout:
+    """
+    RPDAP PCBA designed with JLink Base Mini layout.
+    """
+    # --- Components ---
+    rpdap = new RPDAPBase
+    usb_connector = new USB2_0TypeCHorizontalConnector
+    debug_connector = new JLinkHeader
+    uart_connector = new UARTConnectorHorizontal
+    power_indicator = new LEDIndicatorRed
+    vcp_indicator = new LEDIndicatorBlue
+
+    # --- Connections ---
+    rpdap.usb ~ usb_connector.usb
+    rpdap.swd ~ debug_connector.swd
+    rpdap.gnd_detect ~ debug_connector.ground_detect
+    rpdap.target_power_reference ~ debug_connector.reference
+    rpdap._power_vbus ~ debug_connector.power_5v
+    rpdap.target_power_reference ~ uart_connector.reference
+    rpdap.uart ~ uart_connector.uart
+    power_indicator.power ~ rpdap._power_3v3
+    rpdap.mcu.gpio[2].line ~> vcp_indicator ~> rpdap.mcu.gpio[16].reference.lv
+
+module RPDAP from RPDAPBase:
     """
     RPDAP module with layout for inclusion in your own design.
+    A RP2040 based USB SWD and UART interface for flashing and debugging.
+    CMSIS-DAP compatible.
+    """
+
+module RPDAPBase:
+    """
+    RPDAP module for inclusion in your own design.
     A RP2040 based USB SWD and UART interface for flashing and debugging.
     CMSIS-DAP compatible.
     """
@@ -67,8 +99,8 @@ module RPDAP:
     swd.required = True
     gnd_detect = new ElectricLogic
     # gnd_detect.line.required = True
-    device_power = new ElectricPower
-    device_power.required = True
+    target_power_reference = new ElectricPower
+    target_power_reference.required = True
 
     # --- Internal interfaces ---
     # Power rails
@@ -146,11 +178,11 @@ module RPDAP:
     # --- Net renaming ---
     usb.usb_if.buspower.hv.override_net_name = "VBUS"
     usb.usb_if.buspower.lv.override_net_name = "GND"
-    swd.dio.line.override_net_name = "SWDIO"
-    swd.clk.line.override_net_name = "SWCLK"
-    swd.swo.line.override_net_name = "SWO"
-    swd.reset.line.override_net_name = "nRESET"
-    uart.tx.line.override_net_name = "UART_TX"
-    uart.rx.line.override_net_name = "UART_RX"
-    gnd_detect.line.override_net_name = "GND_DETECT"
-    device_power.override_net_name = "DEVICE_PWR"
+    swd.dio.line.override_net_name = "TARGET_SWDIO"
+    swd.clk.line.override_net_name = "TARGET_SWCLK"
+    swd.swo.line.override_net_name = "TARGET_SWO"
+    swd.reset.line.override_net_name = "TARGET_RESET"
+    uart.tx.line.override_net_name = "TARGET_UART_TX"
+    uart.rx.line.override_net_name = "TARGET_UART_RX"
+    gnd_detect.line.override_net_name = "TARGET_GND_DETECT"
+    target_power_reference.override_net_name = "TARGET_PWR_REF"
