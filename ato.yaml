@@ -6,7 +6,7 @@ paths:
 
 builds:
   default:
-    entry: main.ato:App
+    entry: main.ato:RPDAPStick
     hide_designators: true
     # exclude_checks: [PCB.requires_drc_check]
     # targets:
@@ -14,8 +14,17 @@ builds:
     #   - manifest
     #   - variable-report
     #   - bom
-  jlink_base_mini_layout:
-    entry: main.ato:JLinkBaseMiniLayout
+  rpdap_compact:
+    entry: main.ato:RPDAPCompact
+    hide_designators: true
+    # exclude_checks: [PCB.requires_drc_check]
+    # targets:
+    #   - mfg-data
+    #   - manifest
+    #   - variable-report
+    #   - bom
+  rpdap_compact_on_board:
+    entry: main.ato:RPDAPCompactOnBoard
     hide_designators: true
     # exclude_checks: [PCB.requires_drc_check]
     # targets:
@@ -29,7 +38,7 @@ builds:
     hide_designators: true
     exclude_checks: [PCB.requires_drc_check]
   aip74lvc1t45:
-    entry: wuxi-aip74lvc1t45.ato:Wuxi_I_core_Elec_AiP74LVC1T45GB236_TR_driver
+    entry: modules/wuxi-aip74lvc1t45.ato:Wuxi_I_core_Elec_AiP74LVC1T45GB236_TR_driver
     hide_designators: true
     exclude_checks: [PCB.requires_drc_check]
 
