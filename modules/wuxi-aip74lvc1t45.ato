@@ -27,9 +27,9 @@ module Wuxi_I_core_Elec_AiP74LVC1T45GB236_TR_model from SingleChannelLevelTransl
     dir.required = True
 
     # --- Internal connections ---
-    a.reference ~ power_a
-    b.reference ~ power_b
-    dir.reference ~ power_a
+    for logic in [a, dir]:
+        logic.reference_shim ~ power_a
+    b.reference_shim ~ power_b
     trait has_single_electric_reference_shared<gnd_only=True>
 
     # --- Constraints ---

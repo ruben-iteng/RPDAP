@@ -1,0 +1,228 @@
+#pragma experiment("TRAITS")
+#pragma experiment("FOR_LOOP")
+import ElectricPower
+import ElectricLogic
+import SWD
+import JTAG
+import UART_Base
+import has_single_electric_reference_shared
+
+from "parts/Megastar_ZX_IDC2_54_2_10PWZ/Megastar_ZX_IDC2_54_2_10PWZ.ato" import Megastar_ZX_IDC2_54_2_10PWZ_package
+from "parts/XFCN_BH254VS_20P/XFCN_BH254VS_20P.ato" import XFCN_BH254VS_20P_package
+from "parts/Samtec_FTSH_105_01_L_DV_K_TR/Samtec_FTSH_105_01_L_DV_K_TR.ato" import Samtec_FTSH_105_01_L_DV_K_TR_package
+from "parts/Tag_Connect_TC2030_IDC_NL/Tag_Connect_TC2030_IDC_NL.ato" import Tag_Connect_TC2030_IDC_NL_package
+from "parts/Tag_Connect_TC2030_IDC_FP/Tag_Connect_TC2030_IDC_FP.ato" import Tag_Connect_TC2030_IDC_FP_package
+
+module JLINKInterfaceTHHorizontal from JLINKInterface:
+    """
+    2x10 pin TH horizontal IDC header with J-Link interface pinout.
+    https://www.segger.com/products/debug-probes/j-link/technology/interface-description/
+    """
+    package = new Megastar_ZX_IDC2_54_2_10PWZ_package
+
+    # --- Package connections ---
+    # JTAG
+    package.1 ~ jtag.vtref.hv
+    package.3 ~ jtag.n_trst.line
+    package.5 ~ jtag.tdi.line
+    package.7 ~ jtag.tms.line
+    package.9 ~ jtag.tck.line
+    package.11 ~ return_test_clock.line
+    # package.11 ~ jtag.rtck.line
+    package.13 ~ jtag.tdo.line
+    package.15 ~ jtag.n_reset.line
+    package.17 ~ jtag.dbgrq.line
+
+    # target power
+    package.19 ~ power_5v.hv
+
+    # SWD
+    package.7 ~ swd.dio.line
+    package.9 ~ swd.clk.line
+    package.13 ~ swd.swo.line
+    package.15 ~ swd.reset.line
+
+    # UART
+    package.5 ~ uart.tx.line
+    package.17 ~ uart.rx.line
+
+    # GND
+    package.4 ~ jtag.vtref.lv
+    package.6 ~ jtag.vtref.lv
+    package.8 ~ jtag.vtref.lv
+    package.10 ~ jtag.vtref.lv
+    package.12 ~ jtag.vtref.lv
+    # Pin 14-16 are on newer J-Link products used for firmware extension purposes.
+    # They can be left open or connected to ground.
+    # package.14 ~ jtag.vtref.lv
+    # package.16 ~ jtag.vtref.lv
+    # package.18 ~ jtag.vtref.lv
+    # package.20 ~ jtag.vtref.lv
+
+module JLINKInterfaceSMDVertical from JLINKInterface:
+    """
+    2x10 pin SMD vertical IDC header with J-Link interface pinout.
+    https://www.segger.com/products/debug-probes/j-link/technology/interface-description/
+    """
+    package = new XFCN_BH254VS_20P_package
+
+    # --- Package connections ---
+    # JTAG
+    package.1 ~ jtag.vtref.hv
+    package.3 ~ jtag.n_trst.line
+    package.5 ~ jtag.tdi.line
+    package.7 ~ jtag.tms.line
+    package.9 ~ jtag.tck.line
+    package.11 ~ return_test_clock.line
+    # package.11 ~ jtag.rtck.line
+    package.13 ~ jtag.tdo.line
+    package.15 ~ jtag.n_reset.line
+    package.17 ~ jtag.dbgrq.line
+
+    # target power
+    package.19 ~ power_5v.hv
+
+    # SWD
+    package.7 ~ swd.dio.line
+    package.9 ~ swd.clk.line
+    package.13 ~ swd.swo.line
+    package.15 ~ swd.reset.line
+
+    # UART
+    package.5 ~ uart.tx.line
+    package.17 ~ uart.rx.line
+
+    # GND
+    package.4 ~ jtag.vtref.lv
+    package.6 ~ jtag.vtref.lv
+    package.8 ~ jtag.vtref.lv
+    package.10 ~ jtag.vtref.lv
+    package.12 ~ jtag.vtref.lv
+    # Pin 14-16 are on newer J-Link products used for firmware extension purposes.
+    # They can be left open or connected to ground.
+    # package.14 ~ jtag.vtref.lv
+    # package.16 ~ jtag.vtref.lv
+    # package.18 ~ jtag.vtref.lv
+    # package.20 ~ jtag.vtref.lv
+
+module JLINKInterface:
+    """
+    2x10 pin IDC header with J-Link interface pinout.
+    https://www.segger.com/products/debug-probes/j-link/technology/interface-description/
+    """
+
+    # --- External interfaces ---
+    swd = new SWD
+    """SWD debug interface"""
+    jtag = new JTAG
+    """JTAG debug interface"""
+    power_5v = new ElectricPower
+    """Optional 5V power to the target"""
+    return_test_clock = new ElectricLogic # TODO: remove if jtag has this is upstream
+    """
+    Return test clock. Used in advanced JTAG configurations.
+    """
+    uart = new UART_Base
+    """UART port to connect to the target for sending and receiving logging"""
+
+    # references
+    for logic in [swd, jtag, uart, return_test_clock]:
+        logic.reference_shim ~ jtag.vtref
+    trait has_single_electric_reference_shared<gnd_only=True>
+
+    # --- Parameters ---
+    assert power_5v.voltage <= 5.0V
+    assert jtag.vtref.voltage <= 5.0V
+
+module ARMCortexMDebugHeader:
+    """
+    10 pin debug header with pinout according to ARM Cortex M debug specification
+    https://documentation-service.arm.com/static/5fce6c49e167456a35b36af1
+    """
+    package = new Samtec_FTSH_105_01_L_DV_K_TR_package
+
+    # --- External interfaces ---
+    swd = new SWD
+    """SWD debug interface"""
+    jtag = new JTAG
+    """JTAG debug interface"""
+    ground_detect = new ElectricLogic
+    """
+    For target to detect the pressence of a debugger.
+    Connect to GND debugger side.
+    """
+
+    # --- Internal connections ---
+    for logic in [swd, jtag, ground_detect]:
+        logic.reference_shim ~ jtag.vtref
+
+    # --- Package connections ---
+    # jtag
+    jtag.tms.line ~ package.2
+    jtag.tck.line ~ package.4
+    jtag.tdo.line ~ package.6
+    jtag.tdi.line ~ package.8
+    jtag.n_trst.line ~ package.10
+
+    # swd
+    swd.dio.line ~ package.2
+    swd.clk.line ~ package.4
+    swd.swo.line ~ package.6
+    swd.reset.line ~ package.10
+
+    # common
+    jtag.vtref.hv ~ package.1
+    jtag.vtref.gnd ~ package.3
+    jtag.vtref.gnd ~ package.5
+
+    ground_detect.line ~ package.9
+
+module SWD_TC2030_IDC_NL:
+    """
+    Tag-Connect TC2030-IDC-NL (6-pin) landing pattern with SWD pinout.
+    Smallest tag-connect landing pattern.
+    """
+    package = new Tag_Connect_TC2030_IDC_NL_2x03_P1_27mm_Vertical_package
+
+    # --- External interfaces ---
+    swd = new SWD
+    reference = new ElectricPower
+
+    # --- Internal connections ---
+    trait has_single_electric_reference_shared
+
+    # --- Package connections ---
+    # swd
+    swd.dio.line ~ package.2
+    swd.reset.line ~ package.3
+    swd.clk.line ~ package.4
+    swd.swo.line ~ package.6
+
+    # common
+    reference.hv ~ package.1
+    reference.gnd ~ package.5
+
+module SWD_TC2030_IDC_FP:
+    """
+    Tag-Connect TC2030-IDC-FP (6-pin) landing pattern with SWD pinout.
+    Has additional holes for mounting clips.
+    """
+    package = new Tag_Connect_TC2030_IDC_FP_2x03_P1_27mm_Vertical_package
+
+    # --- External interfaces ---
+    swd = new SWD
+    reference = new ElectricPower
+
+    # --- Internal connections ---
+    trait has_single_electric_reference_shared
+
+    # --- Package connections ---
+    # swd
+    swd.dio.line ~ package.2
+    swd.reset.line ~ package.3
+    swd.clk.line ~ package.4
+    swd.swo.line ~ package.6
+
+    # common
+    reference.hv ~ package.1
+    reference.gnd ~ package.5

@@ -59,7 +59,7 @@
     "ssh_key": ""
   },
   "meta": {
-    "filename": "jlink_base_mini_layout.kicad_prl",
+    "filename": "rpdap_compact.kicad_prl",
     "version": 5
   },
   "net_inspector_panel": {

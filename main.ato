@@ -7,6 +7,7 @@ import Resistor
 import UART_Base
 import USB2_0
 import SWD
+import JTAG
 
 from "atopile/raspberry-rp2040/raspberry-rp2040.ato" import Raspberry_Pi_RP2040
 from "atopile/usb-connectors/usb-connectors.ato" import USB2_0TypeCHorizontalConnector
@@ -14,19 +15,18 @@ from "atopile/indicator-leds/indicator-leds.ato" import LEDIndicatorRed
 from "atopile/indicator-leds/indicator-leds.ato" import LEDIndicatorGreen
 from "atopile/indicator-leds/indicator-leds.ato" import LEDIndicatorBlue
 from "atopile/logos/logos.ato" import atopile_logo_25x6mm
-from "ruben-iteng/debug-interfaces/debug-interfaces.ato" import ARM_CORTEX_M_DEBUG_HEADER
 from "ruben-iteng/ldos/ldos.ato" import LDO_5V_to_3V3
 
+from "modules/debug-connectors.ato" import ARMCortexMDebugHeader
+from "modules/debug-connectors.ato" import JLINKInterfaceTHHorizontal
+from "modules/debug-connectors.ato" import JLINKInterfaceSMDVertical
 from "modules/wuxi-aip74lvc1t45.ato" import Wuxi_I_core_Elec_AiP74LVC1T45GB236_TR_driver
 from "modules/uart_connector.ato" import UARTConnectorVertical
 from "modules/uart_connector.ato" import UARTConnectorHorizontal
-from "modules/jlink-header.ato" import JLINKInterface
-from "modules/jlink-header.ato" import JLINKInterfaceTHHorizontal
-from "modules/jlink-header.ato" import JLINKInterfaceSMDVertical
 
 from "parts/Sinhoo_SMTSO1630MTJ/Sinhoo_SMTSO1630MTJ.ato" import Sinhoo_SMTSO1630MTJ_package
 from "parts/Sinhoo_SMTSO2530CTJ/Sinhoo_SMTSO2530CTJ.ato" import Sinhoo_SMTSO2530CTJ_package
-from "parts/SEGGER_JLink_Compact/SEGGER_JLink_Compact.ato" import SEGGER_JLink_Compact_package
+from "parts/RPDAP_Compact/RPDAP_Compact.ato" import RPDAP_Compact_package
 
 module RPDAPStick:
     """
@@ -37,22 +37,17 @@ module RPDAPStick:
     # --- Components ---
     rpdap = new RPDAP
     usb_connector = new USB2_0TypeCHorizontalConnector
-    debug_connector = new ARM_CORTEX_M_DEBUG_HEADER
+    debug_connector = new ARMCortexMDebugHeader
     uart_connector = new UARTConnectorVertical
     standoff = new Sinhoo_SMTSO1630MTJ_package[4]
-    power_indicator = new LEDIndicatorRed
-    vcp_indicator = new LEDIndicatorBlue
-    atopile_logo = new atopile_logo_25x6mm
 
     # --- Connections ---
     rpdap.usb ~ usb_connector.usb
     rpdap.swd ~ debug_connector.swd
-    rpdap.gnd_detect ~ debug_connector.ground_detect
-    rpdap.target_power_reference ~ debug_connector.reference
-    rpdap.target_power_reference ~ uart_connector.reference
+    rpdap.jtag ~ debug_connector.jtag
     rpdap.uart ~ uart_connector.uart
-    power_indicator.power ~ rpdap._power_3v3
-    rpdap.mcu.gpio[2].line ~> vcp_indicator ~> rpdap.mcu.gpio[16].reference.lv
+
+    debug_connector.ground_detect.line ~ debug_connector.ground_detect.reference.lv
 
     for so in standoff:
         so.1 ~ rpdap._power_3v3.lv
@@ -64,63 +59,60 @@ module RPDAPCompact:
     # --- Components ---
     rpdap = new RPDAPBase
     usb_connector = new USB2_0TypeCHorizontalConnector
-    debug_connector = new JLINKInterface
-    debug_connector.package -> JLINKInterfaceTHHorizontal
+    debug_connector = new JLINKInterfaceTHHorizontal
     uart_connector = new UARTConnectorHorizontal
-    power_indicator = new LEDIndicatorRed
-    vcp_indicator = new LEDIndicatorBlue
 
     # --- Connections ---
     rpdap.usb ~ usb_connector.usb
     rpdap.swd ~ debug_connector.swd
-    rpdap.uart ~ debug_connector.uart
-    rpdap.uart ~ uart_connector.uart
-    rpdap.gnd_detect ~ debug_connector.ground_detect
-    rpdap.target_power_reference ~ debug_connector.power_logic_reference
+    rpdap.jtag ~ debug_connector.jtag
+    # rpdap.uart ~ debug_connector.uart
+    # Not connected, this debugger supports UART both in SWD and JTAG mode (unlike original JLINK).
     rpdap._power_vbus ~ debug_connector.power_5v
-    rpdap.target_power_reference ~ uart_connector.reference
-    power_indicator.power ~ rpdap._power_3v3
-    rpdap.mcu.gpio[2].line ~> vcp_indicator ~> rpdap.mcu.gpio[16].reference.lv
+    rpdap.uart ~ uart_connector.uart
 
 module RPDAPCompactOnBoard:
     """
     RPDAP Compact or SEGGER JLink Base Compact module mount for use test and provisioning equipment.
     """
     # --- Components ---
-    jlink = new SEGGER_JLink_Compact_package
+    debugger = new RPDAP_Compact_package
     standoff = new Sinhoo_SMTSO2530CTJ_package[2]
-    jlink_interface = new JLINKInterface
-    jlink_interface.package -> JLINKInterfaceSMDVertical
+    jlink_header = new JLINKInterfaceSMDVertical
 
 module RPDAP from RPDAPBase:
     """
     RPDAP module with layout for inclusion in your own design.
-    A RP2040 based USB SWD and UART interface for flashing and debugging.
+    A RP2040 based USB SWD, JTAG, and UART interface for flashing and debugging.
     CMSIS-DAP compatible.
     """
 
 module RPDAPBase:
     """
     RPDAP module for inclusion in your own design.
-    A RP2040 based USB SWD and UART interface for flashing and debugging.
+    A RP2040 based USB SWD, JTAG, and UART interface for flashing and debugging.
     CMSIS-DAP compatible.
     """
     # --- Components ---
     mcu = new Raspberry_Pi_RP2040
-    level_shifter = new Wuxi_I_core_Elec_AiP74LVC1T45GB236_TR_driver[6]
+    level_shifter = new Wuxi_I_core_Elec_AiP74LVC1T45GB236_TR_driver[7]
     ldo = new LDO_5V_to_3V3
+    power_3v3_indicator = new LEDIndicatorRed
+    vcp_indicator = new LEDIndicatorBlue
 
     # -- External interfaces --
     usb = new USB2_0
+    """USB interface of the mcu to the host"""
     usb.required = True
     uart = new UART_Base
+    """UART port to connect to the target for sending and receiving logging"""
     uart.required = True
     swd = new SWD
+    """SWD interface to the target"""
     swd.required = True
-    gnd_detect = new ElectricLogic
-    # gnd_detect.line.required = True
-    target_power_reference = new ElectricPower
-    target_power_reference.required = True
+    jtag = new JTAG
+    """JTAG interface to the target"""
+    jtag.required = True
 
     # --- Internal interfaces ---
     # Power rails
@@ -128,13 +120,11 @@ module RPDAPBase:
     _power_3v3 = new ElectricPower
 
     # -- Connections --
-    # USB-C provides VBUS (5V) and D+/D-
+    # Power
     usb.usb_if.buspower ~ _power_vbus
     _power_vbus ~ ldo.power_in
     ldo.power_out ~ _power_3v3
     mcu.power ~ _power_3v3
-
-    mcu._factory_test_enable ~ _power_3v3.lv # TODO: remove if fixed upstream
 
     # USB data
     usb ~ mcu.usb
@@ -142,67 +132,72 @@ module RPDAPBase:
     # Level shifters share references
     for ls in level_shifter:
         ls.power_a ~ _power_3v3
-        ls.power_b ~ swd.reference_shim
+        ls.power_b ~ jtag.vtref
 
-    # Direction of the level shifters
-    #           gpio[12]: SWDIO (bidirectional, DIR via GPIO9)
-    #           gpio[11]: SWCLK (A->B)
-    #           gpio[14]: SWO   (B->A)
-    #           gpio[15]: nRESET (A->B)
-    # uart[0].tx gpio[4]: UART TX (A->B)
-    # uart[0].rx gpio[5]: UART RX (B->A)
+    # Direction of the level shifters and MCU GPIO mapping
+    # A side is MCU, B side is target.
+    # gpio[12]: SWDIO/TMS (bidirectional, DIR via GPIO9)
+    # gpio[11]: SWCLK/TCK (A->B)
+    # gpio[13]: TDI (A->B)
+    # gpio[14]: TDO (B->A)
+    # gpio[15]: nRESET (A->B)
+    #  gpio[0]: VCP TX (A->B)
+    #  gpio[1]: VCP RX (B->A)
+    #  gpio[2]: VCP status indicator
+    # gpio[25]: DAP status indicator (in RP2040 reference design)
 
-    # SWDIO
+    # TMS/SWDIO
     mcu.gpio[12] ~ level_shifter[0].a
-    level_shifter[0].b ~ swd.dio
+    level_shifter[0].b ~ jtag.tms
     mcu.gpio[9] ~ level_shifter[0].dir
+    swd.dio ~ jtag.tms
+    jtag.tms.line.override_net_name = "TMS_DIO"
 
-    # SWCLK
+    # TCK/SWCLK
     mcu.gpio[11] ~ level_shifter[1].a
-    level_shifter[1].b ~ swd.clk
-    # DIR = High (A->B)
-    level_shifter[1].dir.line ~ _power_3v3.hv
+    level_shifter[1].b ~ jtag.tck
+    # DIR = High (MCU->Target)
+    level_shifter[1].dir.line ~ _power_3v3.hv #level_shifter[1].dir.reference.hv
+    swd.clk ~ jtag.tck
+    jtag.tck.line.override_net_name = "TCK_SWCLK"
 
-    # SWO
+    # TDO/SWO
     mcu.gpio[14] ~ level_shifter[2].a
-    level_shifter[2].b ~ swd.swo
-    # DIR = Low (B->A)
-    level_shifter[2].dir.line ~ _power_3v3.lv
+    level_shifter[2].b ~ jtag.tdo
+    # DIR = Low (Target->MCU)
+    level_shifter[2].dir.line ~ _power_3v3.lv #level_shifter[2].dir.reference.lv
+    swd.swo ~ jtag.tdo
+    jtag.tdo.line.override_net_name = "TDO_SWO"
 
     # nRESET
     mcu.gpio[15] ~ level_shifter[3].a
-    level_shifter[3].b ~ swd.reset
-    # DIR = High (A->B)
-    level_shifter[3].dir.line ~ _power_3v3.hv
+    level_shifter[3].b ~ jtag.n_reset
+    # DIR = High (MCU->Target)
+    level_shifter[3].dir.line ~ _power_3v3.hv #level_shifter[3].dir.reference.hv
+    swd.reset ~ jtag.n_reset
+    jtag.n_reset.line.override_net_name = "nRESET"
+
+    # TDI
+    mcu.gpio[13] ~ level_shifter[4].a
+    level_shifter[4].b ~ jtag.tdi
+    # DIR = HIGH (MCU->Target)
+    level_shifter[4].dir.line ~ _power_3v3.hv #level_shifter[4].dir.reference.hv
+    jtag.tdi.line.override_net_name = "TDI"
 
     # UART0 TX (MCU -> target)
-    mcu.uart.tx ~ level_shifter[4].a
-    level_shifter[4].b ~ uart.tx
-    # DIR = High (A->B)
-    level_shifter[4].dir.line ~ _power_3v3.hv
+    mcu.uart.tx ~ level_shifter[5].a
+    level_shifter[5].b ~ uart.tx
+    # DIR = High (MCU->Target)
+    level_shifter[5].dir.line ~ _power_3v3.hv #level_shifter[5].dir.reference.hv
 
     # UART0 RX (target -> MCU)
-    mcu.uart.rx ~ level_shifter[5].a
-    level_shifter[5].b ~ uart.rx
-    # DIR = Low (B->A)
-    level_shifter[5].dir.line ~ _power_3v3.lv
+    mcu.uart.rx ~ level_shifter[6].a
+    level_shifter[6].b ~ uart.rx
+    # DIR = Low (Target->MCU)
+    level_shifter[6].dir.line ~ _power_3v3.lv #level_shifter[6].dir.reference.lv
 
-    # GND detect on GPIO3 with pull-up on MCU side; sense target ground
-    gnd_detect_pull_up_resistor = new Resistor
-    gnd_detect_pull_up_resistor.resistance = 100kohm +/- 5%
-    gnd_detect_pull_up_resistor.package = "0402"
-    mcu.gpio[3].line ~> gnd_detect_pull_up_resistor ~> _power_3v3.hv
-    mcu.gpio[3].reference ~ _power_3v3
-    mcu.gpio[3] ~ gnd_detect
+    # Power indicator
+    power_3v3_indicator.power ~ _power_3v3
 
-    # --- Net renaming ---
-    usb.usb_if.buspower.hv.override_net_name = "VBUS"
-    usb.usb_if.buspower.lv.override_net_name = "GND"
-    swd.dio.line.override_net_name = "TARGET_SWDIO"
-    swd.clk.line.override_net_name = "TARGET_SWCLK"
-    swd.swo.line.override_net_name = "TARGET_SWO"
-    swd.reset.line.override_net_name = "TARGET_RESET"
-    uart.tx.line.override_net_name = "TARGET_UART_TX"
-    uart.rx.line.override_net_name = "TARGET_UART_RX"
-    gnd_detect.line.override_net_name = "TARGET_GND_DETECT"
-    target_power_reference.override_net_name = "TARGET_PWR_REF"
+    # VCP status indicator
+    mcu.gpio[2].line ~> vcp_indicator ~> mcu.gpio[2].reference.lv
