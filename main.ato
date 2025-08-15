@@ -40,6 +40,7 @@ module RPDAPStick:
     debug_connector = new ARMCortexMDebugHeader
     uart_connector = new UARTConnectorVertical
     standoff = new Sinhoo_SMTSO1630MTJ_package[4]
+    atopile_logo = new atopile_logo_25x6mm
 
     # --- Connections ---
     rpdap.usb ~ usb_connector.usb
