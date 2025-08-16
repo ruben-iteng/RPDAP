@@ -1,0 +1,17 @@
+#pragma experiment("TRAITS")
+import has_datasheet_defined
+import has_designator_prefix
+import has_part_picked
+import is_atomic_part
+import is_auto_generated
+
+component mounting_hole_m2_pad_package:
+    trait is_atomic_part<manufacturer="MountingHole", partnumber="2.2mm_M2_Pad", footprint="MountingHole_2.2mm_M2_Pad.kicad_mod", symbol="MountingHole_2.2mm_M2_Pad.kicad_sym">
+    trait has_designator_prefix<prefix="H">
+
+    # pins
+    pin 1
+
+component mounting_hole_m2_no_pad_package:
+    trait is_atomic_part<manufacturer="MountingHole", partnumber="2.2mm_M2", footprint="MountingHole_2.2mm_M2.kicad_mod", symbol="MountingHole_2.2mm_M2.kicad_sym">
+    trait has_designator_prefix<prefix="H">

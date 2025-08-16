@@ -1,0 +1,71 @@
+requires-atopile: ^0.11.6
+
+paths:
+  src: .
+  layout: ./layouts
+
+builds:
+  aip74lvc1t45:
+    entry: modules/wuxi-aip74lvc1t45.ato:Wuxi_I_core_Elec_AiP74LVC1T45GB236_TR_driver
+    hide_designators: true
+    exclude_checks: [PCB.requires_drc_check]
+
+  # Layouts for use in other designs
+  rpdap:
+    entry: main.ato:RPDAP
+    hide_designators: true
+    exclude_checks: [PCB.requires_drc_check]
+    targets:
+      - 3d-image
+      - 2d-image
+  rpdap_compact_on_board:
+    entry: main.ato:RPDAPCompactOnBoard
+    hide_designators: true
+    exclude_checks: [PCB.requires_drc_check]
+    targets:
+      - 3d-image
+      - 2d-image
+
+  # Standalone boards
+  rpdap_stick:
+    entry: main.ato:RPDAPStick
+    hide_designators: true
+    # exclude_checks: [PCB.requires_drc_check]
+    targets:
+      - 3d-image
+      - 2d-image
+      - mfg-data
+      - manifest
+      - variable-report
+      - bom
+  rpdap_compact:
+    entry: main.ato:RPDAPCompact
+    hide_designators: true
+    # exclude_checks: [PCB.requires_drc_check]
+    targets:
+      - 3d-image
+      - 2d-image
+      - mfg-data
+      - manifest
+      - variable-report
+      - bom
+
+dependencies:
+  - type: registry
+    identifier: atopile/raspberry-rp2040
+    release: 0.2.2
+  - type: registry
+    identifier: atopile/logos
+    release: 0.1.2
+  - type: registry
+    identifier: atopile/usb-connectors
+    release: 0.3.0
+  - type: registry
+    identifier: atopile/st-ldk220
+    release: 0.2.1
+  - type: registry
+    identifier: ruben-iteng/ldos
+    release: 0.2.3
+  - type: registry
+    identifier: atopile/indicator-leds
+    release: 0.1.4

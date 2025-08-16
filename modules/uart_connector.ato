@@ -1,0 +1,45 @@
+import UART_Base
+import ElectricPower
+
+from "parts/HCTL_HC_1_0_4PWT_B_HW/HCTL_HC_1_0_4PWT_B_HW.ato" import HCTL_HC_1_0_4PWT_B_HW_package
+from "parts/HCTL_HC_1_0_4PLT/HCTL_HC_1_0_4PLT.ato" import HCTL_HC_1_0_4PLT_package
+
+module UARTConnectorVertical from UARTConnector:
+    """
+    UART exposed on a 4 pin JST SH type vertical connector with reference power.
+    """
+    package = new HCTL_HC_1_0_4PLT_package
+
+    # --- Package connections ---
+    package.1 ~ reference.hv
+    package.2 ~ reference.gnd
+    package.3 ~ uart.tx.line
+    package.4 ~ uart.rx.line
+    package.5 ~ reference.gnd
+    package.6 ~ reference.gnd
+
+module UARTConnectorHorizontal from UARTConnector:
+    """
+    UART exposed on a 4 pin JST SH type horizontal connector with reference power.
+    """
+    package = new HCTL_HC_1_0_4PWT_B_HW_package
+
+    # --- Package connections ---
+    package.1 ~ reference.hv
+    package.2 ~ reference.gnd
+    package.3 ~ uart.tx.line
+    package.4 ~ uart.rx.line
+    package.5 ~ reference.gnd
+    package.6 ~ reference.gnd
+
+module UARTConnector:
+    """
+    UART exposed on a 4 pin JST SH type connector with reference power.
+    """
+
+    # --- External interfaces ---
+    uart = new UART_Base
+    reference = new ElectricPower
+
+    # --- Internal connections ---
+    uart.reference_shim ~ reference

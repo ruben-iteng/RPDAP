@@ -1,0 +1,7 @@
+#pragma experiment("TRAITS")
+import has_designator_prefix
+import is_atomic_part
+
+component RPDAP_Compact_package:
+    trait is_atomic_part<manufacturer="RPDAP", partnumber="Compact", footprint="RPDAP_Compact.kicad_mod", symbol="RPDAP_Compact.kicad_sym", model="RPDAP_Compact.step">
+    trait has_designator_prefix<prefix="MOD">

@@ -1,0 +1,36 @@
+#pragma experiment("TRAITS")
+import has_designator_prefix
+import has_part_picked
+import is_atomic_part
+import is_auto_generated
+
+component Megastar_ZX_IDC2_54_2_10PWZ_package:
+    # This trait marks this file as auto-generated
+    # If you want to manually change it, remove the trait
+    # trait is_auto_generated<system="ato_part", source="easyeda:C7501253", date="2025-08-14T08:17:18.386423+00:00", checksum="672057f7738030fd49676ff55d29a011e6fd31cc20e76a8183307a79eb7e0c6c">
+
+    trait is_atomic_part<manufacturer="Megastar", partnumber="ZX-IDC2.54-2-10PWZ", footprint="IDC-TH_20P-P2.54_ZX-IDC2.54-2-10PWZ.kicad_mod", symbol="ZX-IDC2.54-2-10PWZ.kicad_sym", model="IDC-TH_20P-P2.54_ZX-IDC2.54-2-10PWZ.STEP">
+    trait has_part_picked::by_supplier<supplier_id="lcsc", supplier_partno="C7501253", manufacturer="Megastar", partno="ZX-IDC2.54-2-10PWZ">
+    trait has_designator_prefix<prefix="J">
+
+    # pins
+    pin 1
+    pin 20
+    pin 3
+    pin 18
+    pin 5
+    pin 16
+    pin 7
+    pin 14
+    pin 9
+    pin 12
+    pin 11
+    pin 10
+    pin 13
+    pin 8
+    pin 15
+    pin 6
+    pin 17
+    pin 4
+    pin 19
+    pin 2

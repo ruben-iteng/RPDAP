@@ -25,7 +25,6 @@ eggs/
 .eggs/
 lib/
 lib64/
-parts/
 sdist/
 var/
 wheels/
@@ -104,5 +103,13 @@ ENV/
 _local
 .local
 
-# faebryk
-build/cache/
+# atopile
+build/
+.ato
+
+# AI
+.cursor/
+.windsurf/
+.github/instructions/ato.instructions.md
+.mcp.json
+CLAUDE.md
