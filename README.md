@@ -20,20 +20,21 @@ This project is build with [atopile](https://atopile.io).
 ### Features
 
 - USB interface (data and power)
-- status LEDs for VCP (Virtual COM Port), DAP, and power.
+- status LEDs for VCP (Virtual COM Port), DAP status, and power.
 - level shifted target interface (SWD, UART)
-  - 1.2-5.5V target voltage
+  - 1.2-5.5V target logic voltage
 
 #### Layouts
 
-There are various layouts available:
+There are various layouts and standalone boards available:
 
-| ![No layout](./mock/no_layout.png)  | ![Basic layout](./mock/basic_layout.png)  |
+| ![Basic layout](./build/builds/rpdap/rpdap.pcba.png)  | ![Stick shaped layout](./build/builds/rpdap_stick/rpdap_stick.pcba.png)  |
 |---------------------------------------|---------------------------------------|
-| No layout (for doing you own layout)                   | Basic layout without connectors (for inclusion in your own design/PCBA) |
-| ![Stick shaped layout](./mock/stick_shaped_layout.png)  | ![JLink Base Compact compatible layout](./mock/jlink_base_compact_compatible_layout.png)  |
-| Stick shaped layout with female USB Type-C connector | JLink Base Compact compatible layout (for use with JLink Base Compact) |
+| Basic layout without connectors (for inclusion in your own design/PCBA) | Standalone stick shaped layout with female USB Type-C, Cortex-M debug header and 4-pin JST-SH UART connector. All inside a PCB enclosure. |
+|  ![RPDAP Compact board](./build/builds/rpdap_compact/rpdap_compact.pcba.png)  | ![JLink Base Compact compatible "footprint"](./build/builds/rpdap_compact_on_board/rpdap_compact_on_board.pcba.png) |
+| Standalone RPDAP Compact board (JLink Base Compact compatible board shape) |  JLink Base Compact compatible "footprint" (for using as build-in debugger/programmer) |
 
 ### Firmware
 
 The firmware for the debugger is available in the [free-dap](https://github.com/ruben-iteng/free-dap) repository.
+Follow this standard RP2040 flashing procedure to flash the firmware.

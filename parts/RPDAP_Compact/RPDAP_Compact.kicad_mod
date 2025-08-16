@@ -227,6 +227,7 @@
 	)
 	(embedded_fonts no)
 	(model "${KIPRJMOD}/../../parts/RPDAP_Compact/J_Link_Compact_V1.0A.step"
+		(hide yes)
 		(offset
 			(xyz -16.9 -9.65 5.6)
 		)
@@ -237,15 +238,15 @@
 			(xyz -0 -0 -0)
 		)
 	)
-	(model "${KIPRJMOD}/../../parts/RPDAP_Compact/RPDAP_Compact.step"
+	(model "${KIPRJMOD}/../../parts/RPDAP_Compact/rpdap_compact.step"
 		(offset
-			(xyz -16.9 -9.65 5.6)
+			(xyz 16.9 0 4.1)
 		)
 		(scale
 			(xyz 1 1 1)
 		)
 		(rotate
-			(xyz -0 -0 -0)
+			(xyz -0 -0 -90)
 		)
 	)
 )
