@@ -1,4 +1,4 @@
-requires-atopile: ^0.11.3
+requires-atopile: ^0.11.6
 
 paths:
   src: .
@@ -9,6 +9,8 @@ builds:
     entry: modules/wuxi-aip74lvc1t45.ato:Wuxi_I_core_Elec_AiP74LVC1T45GB236_TR_driver
     hide_designators: true
     exclude_checks: [PCB.requires_drc_check]
+
+  # Layouts for use in other designs
   rpdap:
     entry: main.ato:RPDAP
     hide_designators: true
@@ -16,7 +18,15 @@ builds:
     targets:
       - 3d-image
       - 2d-image
+  rpdap_compact_on_board:
+    entry: main.ato:RPDAPCompactOnBoard
+    hide_designators: true
+    exclude_checks: [PCB.requires_drc_check]
+    targets:
+      - 3d-image
+      - 2d-image
 
+  # Standalone boards
   rpdap_stick:
     entry: main.ato:RPDAPStick
     hide_designators: true
@@ -30,17 +40,6 @@ builds:
       - bom
   rpdap_compact:
     entry: main.ato:RPDAPCompact
-    hide_designators: true
-    # exclude_checks: [PCB.requires_drc_check]
-    targets:
-      - 3d-image
-      - 2d-image
-      - mfg-data
-      - manifest
-      - variable-report
-      - bom
-  rpdap_compact_on_board:
-    entry: main.ato:RPDAPCompactOnBoard
     hide_designators: true
     # exclude_checks: [PCB.requires_drc_check]
     targets:

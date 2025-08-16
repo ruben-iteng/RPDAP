@@ -2,7 +2,7 @@
 
 # RPDAP
 
-<img height=300 title="3D render" src="./"/>
+<img height=300 title="3D render" src="./build/builds/rpdap_stick/rpdap_stick.pcba.png"/>
 <br/>
 
 CMSIS-DAP debugger hardware based on a Raspberry Pi RP2040 microcontroller.
@@ -36,5 +36,5 @@ There are various layouts and standalone boards available:
 
 ### Firmware
 
-The firmware for the debugger is available in the [free-dap](https://github.com/ruben-iteng/free-dap) repository.
+The firmware for the debugger is available in the [free-dap](https://github.com/ruben-iteng/free-dap/releases/latest) repository.
 Follow this standard RP2040 flashing procedure to flash the firmware.
