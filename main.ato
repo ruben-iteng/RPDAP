@@ -62,6 +62,7 @@ module RPDAPCompact:
     usb_connector = new USB2_0TypeCHorizontalConnector
     debug_connector = new JLINKInterfaceTHHorizontal
     uart_connector = new UARTConnectorHorizontal
+    atopile_logo = new atopile_logo_25x6mm
 
     # --- Connections ---
     rpdap.usb ~ usb_connector.usb
@@ -202,3 +203,8 @@ module RPDAPBase:
 
     # VCP status indicator
     mcu.gpio[2].line ~> vcp_indicator ~> mcu.gpio[2].reference.lv
+
+    # --- Net names ---
+    _power_3v3.hv.override_net_name = "3V3"
+    _power_3v3.lv.override_net_name = "GND"
+    _power_vbus.hv.override_net_name = "Vbus_fused"

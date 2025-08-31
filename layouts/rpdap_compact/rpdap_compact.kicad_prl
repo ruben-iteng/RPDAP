@@ -23,10 +23,10 @@
       "lockedItems": false,
       "otherItems": false,
       "pads": false,
-      "text": true,
+      "text": false,
       "tracks": false,
-      "vias": false,
-      "zones": false
+      "vias": true,
+      "zones": true
     },
     "visible_items": [
       "vias",
@@ -40,7 +40,6 @@
       "footprint_references",
       "tracks",
       "drc_errors",
-      "drawing_sheet",
       "bitmaps",
       "pads",
       "zones",
