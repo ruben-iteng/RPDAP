@@ -177,11 +177,11 @@
                 )
             )
         )
-        (property "__atopile_lib_fp_hash__" "5ae52841-6ef7-a912-75e2-144069edcaf6"
+        (property "__atopile_lib_fp_hash__" "c6f188f9-fcd9-3d8e-f5a6-41754c5ea016"
             (at 0 0 0)
             (layer "User.9")
             (hide yes)
-            (uuid "6933f8f8-3e16-42a8-968e-558a4642524b")
+            (uuid "a7a263a5-6228-4fbf-8e73-16074642524b")
             (effects
                 (font
                     (size 0.125 0.125)
@@ -804,11 +804,11 @@
                 )
             )
         )
-        (property "__atopile_lib_fp_hash__" "5474e4ee-bcda-3568-7f11-4348111438f6"
+        (property "__atopile_lib_fp_hash__" "a0df12ae-aefa-2bd5-2275-f72f40adec11"
             (at 0 0 0)
             (layer "User.9")
             (hide yes)
-            (uuid "a74b7359-f106-438e-a37a-75524642524b")
+            (uuid "8881d470-1b80-4246-ae39-501d4642524b")
             (effects
                 (font
                     (size 0.125 0.125)
@@ -1182,11 +1182,11 @@
                 )
             )
         )
-        (property "__atopile_lib_fp_hash__" "5474e4ee-bcda-3568-7f11-4348111438f6"
+        (property "__atopile_lib_fp_hash__" "a0df12ae-aefa-2bd5-2275-f72f40adec11"
             (at 0 0 0)
             (layer "User.9")
             (hide yes)
-            (uuid "0fc59db0-aca1-4149-958c-65b14642524b")
+            (uuid "28cde391-0adc-484d-b9c9-02a04642524b")
             (effects
                 (font
                     (size 0.125 0.125)
@@ -1548,11 +1548,11 @@
                 )
             )
         )
-        (property "__atopile_lib_fp_hash__" "57c40867-185b-bbaa-ac98-dae30cff2fb8"
+        (property "__atopile_lib_fp_hash__" "66dac991-4ea4-ce46-473b-4fe6ae229b55"
             (at 0 0 0)
             (layer "User.9")
             (hide yes)
-            (uuid "215b3254-b2c2-4374-ab40-98c84642524b")
+            (uuid "99b6709f-3ba0-4d4e-92cd-267f4642524b")
             (effects
                 (font
                     (size 0.125 0.125)
