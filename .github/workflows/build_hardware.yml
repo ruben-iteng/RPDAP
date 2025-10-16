@@ -23,7 +23,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: atopile/setup-atopile@main
+      - uses: atopile/setup-atopile@v1
 
       - run: ato sync
       - run: ato build --frozen
