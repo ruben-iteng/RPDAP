@@ -1,0 +1,41 @@
+name: Build
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+    branches:
+      - main
+    paths:
+      - "**/*.ato"
+      - "ato.yaml"
+      - "parts/**"
+      - "layouts/**"
+  workflow_dispatch:
+
+jobs:
+  build:
+    if: ${{ github.event_name != 'pull_request' || github.event.pull_request.draft == false }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: atopile/setup-atopile@v1
+
+      - run: ato sync
+      - run: ato build --frozen
+        id: build
+        continue-on-error: true
+
+      - name: Upload Combined Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: build
+          path: build
+
+      - name: Check build status
+        if: steps.build.outcome == 'failure'
+        run: exit 1
