@@ -22,42 +22,45 @@ module JLINKInterfaceTHHorizontal from JLINKInterface:
 
     # --- Package connections ---
     # JTAG
-    package.1 ~ jtag.vtref.hv
-    package.3 ~ jtag.n_trst.line
-    package.5 ~ jtag.tdi.line
-    package.7 ~ jtag.tms.line
-    package.9 ~ jtag.tck.line
-    package.11 ~ return_test_clock.line
-    # package.11 ~ jtag.rtck.line
-    package.13 ~ jtag.tdo.line
-    package.15 ~ jtag.n_reset.line
-    package.17 ~ jtag.dbgrq.line
+    package.19 ~ jtag.vtref.hv
+    package.17 ~ jtag.n_trst.line
+    package.15 ~ jtag.tdi.line
+    package.13 ~ jtag.tms.line
+    package.11 ~ jtag.tck.line
+    package.10 ~ return_test_clock.line
+    # package.9 ~ jtag.rtck.line
+    package.7 ~ jtag.tdo.line
+    package.5 ~ jtag.n_reset.line
+    package.3 ~ jtag.dbgrq.line
+
+    # 1  2  3  4  5  6  7  8  9  10 11 12 13 14 15 16 17 18 19 20
+    # 19 18 17 16 15 14 13 12 11 10 9  8  7  6  5  4  3  2  1  0
 
     # target power
-    package.19 ~ power_5v.hv
+    package.1 ~ power_5v.hv
 
     # SWD
-    package.7 ~ swd.dio.line
-    package.9 ~ swd.clk.line
-    package.13 ~ swd.swo.line
-    package.15 ~ swd.reset.line
+    package.13 ~ swd.dio.line
+    package.11 ~ swd.clk.line
+    package.7 ~ swd.swo.line
+    package.5 ~ swd.reset.line
 
     # UART
-    package.5 ~ uart.tx.line
-    package.17 ~ uart.rx.line
+    package.15 ~ uart.tx.line
+    package.3 ~ uart.rx.line
 
     # GND
-    package.4 ~ jtag.vtref.lv
-    package.6 ~ jtag.vtref.lv
-    package.8 ~ jtag.vtref.lv
-    package.10 ~ jtag.vtref.lv
+    package.16 ~ jtag.vtref.lv
+    package.14 ~ jtag.vtref.lv
     package.12 ~ jtag.vtref.lv
-    # Pin 14-16 are on newer J-Link products used for firmware extension purposes.
+    package.10 ~ jtag.vtref.lv
+    package.18 ~ jtag.vtref.lv
+    # Pin 6,4,2,0 are on newer J-Link products used for firmware extension purposes.
     # They can be left open or connected to ground.
-    # package.14 ~ jtag.vtref.lv
-    # package.16 ~ jtag.vtref.lv
-    # package.18 ~ jtag.vtref.lv
-    # package.20 ~ jtag.vtref.lv
+    # package.6 ~ jtag.vtref.lv
+    # package.4 ~ jtag.vtref.lv
+    # package.2 ~ jtag.vtref.lv
+    # package.0 ~ jtag.vtref.lv
 
 module JLINKInterfaceSMDVertical from JLINKInterface:
     """

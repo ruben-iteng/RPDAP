@@ -8,48 +8,13 @@ import has_single_electric_reference_shared
 
 from "parts/Wuxi_I_core_Elec_AiP74LVC1T45GB236_TR/Wuxi_I_core_Elec_AiP74LVC1T45GB236_TR.ato" import Wuxi_I_core_Elec_AiP74LVC1T45GB236_TR_package
 
-module SingleChannelLevelTranslatorWithDualPowerSupply:
-    # --- External interfaces ---
-    power_a = new ElectricPower
-    power_a.required = True
-    power_b = new ElectricPower
-    power_b.required = True
-    a = new ElectricLogic
-    a.required = True
-    b = new ElectricLogic
-    b.required = True
 
-module Wuxi_I_core_Elec_AiP74LVC1T45GB236_TR_model from SingleChannelLevelTranslatorWithDualPowerSupply:
-    package = new Wuxi_I_core_Elec_AiP74LVC1T45GB236_TR_package
-
-    # --- External interfaces ---
-    dir = new ElectricLogic
-    dir.required = True
-
-    # --- Internal connections ---
-    for logic in [a, dir]:
-        logic.reference_shim ~ power_a
-    b.reference_shim ~ power_b
-    trait has_single_electric_reference_shared<gnd_only=True>
-
-    # --- Constraints ---
-    assert power_a.voltage within 1.2V to 5.5V
-    assert power_b.voltage within 1.2V to 5.5V
-
-    # --- Package connections ---
-    power_a.hv ~ package.VCCA
-    power_b.hv ~ package.VCCB
-    power_a.lv ~ package.GND
-    a.line ~ package.A
-    b.line ~ package.B
-    dir.line ~ package.DIR
-
-module Wuxi_I_core_Elec_AiP74LVC1T45GB236_TR_driver:
+module Wuxi_I_core_Elec_AiP74LVC1T45GB236_TR:
     """
     Single bit, dual supply transceivers with 3-state outputs that
     enable bidirectional level translation.
     """
-    model = new Wuxi_I_core_Elec_AiP74LVC1T45GB236_TR_model
+    package = new Wuxi_I_core_Elec_AiP74LVC1T45GB236_TR_package
 
     # --- External interfaces ---
     power_a = new ElectricPower
@@ -64,12 +29,29 @@ module Wuxi_I_core_Elec_AiP74LVC1T45GB236_TR_driver:
     """High = A to B, Low = B to A"""
     # dir.required = True
 
+    # # --- Internal connections ---
+    # for logic in [a, dir]:
+    #     logic.reference_shim ~ power_a
+    # b.reference_shim ~ power_b
+    # trait has_single_electric_reference_shared<gnd_only=True>
+
+    # --- Constraints ---
+    assert power_a.voltage within 1.2V to 5.5V
+    assert power_b.voltage within 1.2V to 5.5V
+
+    # --- Package connections ---
+    power_a.hv ~ package.VCCA
+    power_b.hv ~ package.VCCB
+    power_a.lv ~ package.GND
+    a.line ~ package.A
+    b.line ~ package.B
+    dir.line ~ package.DIR
+
     # --- Internal connections ---
-    model.power_a ~ power_a
-    model.power_b ~ power_b
-    model.a ~ a
-    model.b ~ b
-    model.dir ~ dir
+    for logic in [a, dir]:
+        logic.reference_shim ~ power_a
+    b.reference_shim ~ power_b
+    trait has_single_electric_reference_shared<gnd_only=True>
 
     # --- Components ---
     caps = new Capacitor[2]

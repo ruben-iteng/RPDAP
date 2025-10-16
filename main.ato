@@ -20,7 +20,7 @@ from "ruben-iteng/ldos/ldos.ato" import LDO_5V_to_3V3
 from "modules/debug-connectors.ato" import ARMCortexMDebugHeader
 from "modules/debug-connectors.ato" import JLINKInterfaceTHHorizontal
 from "modules/debug-connectors.ato" import JLINKInterfaceSMDVertical
-from "modules/wuxi-aip74lvc1t45.ato" import Wuxi_I_core_Elec_AiP74LVC1T45GB236_TR_driver
+from "modules/wuxi-aip74lvc1t45.ato" import Wuxi_I_core_Elec_AiP74LVC1T45GB236_TR
 from "modules/uart_connector.ato" import UARTConnectorVertical
 from "modules/uart_connector.ato" import UARTConnectorHorizontal
 
@@ -48,7 +48,7 @@ module RPDAPStick:
     rpdap.jtag ~ debug_connector.jtag
     rpdap.uart ~ uart_connector.uart
 
-    debug_connector.ground_detect.line ~ debug_connector.ground_detect.reference.lv
+    debug_connector.ground_detect.line ~ debug_connector.ground_detect.reference_shim.lv
 
     for so in standoff:
         so.1 ~ rpdap._power_3v3.lv
@@ -97,7 +97,7 @@ module RPDAPBase:
     """
     # --- Components ---
     mcu = new Raspberry_Pi_RP2040
-    level_shifter = new Wuxi_I_core_Elec_AiP74LVC1T45GB236_TR_driver[7]
+    level_shifter = new Wuxi_I_core_Elec_AiP74LVC1T45GB236_TR[7]
     ldo = new LDO_5V_to_3V3
     power_3v3_indicator = new LEDIndicatorRed
     vcp_indicator = new LEDIndicatorBlue
@@ -159,7 +159,7 @@ module RPDAPBase:
     mcu.gpio[11] ~ level_shifter[1].a
     level_shifter[1].b ~ jtag.tck
     # DIR = High (MCU->Target)
-    level_shifter[1].dir.line ~ _power_3v3.hv #level_shifter[1].dir.reference.hv
+    level_shifter[1].dir.line ~ level_shifter[1].dir.reference_shim.hv
     swd.clk ~ jtag.tck
     jtag.tck.line.override_net_name = "TCK_SWCLK"
 
@@ -167,7 +167,7 @@ module RPDAPBase:
     mcu.gpio[14] ~ level_shifter[2].a
     level_shifter[2].b ~ jtag.tdo
     # DIR = Low (Target->MCU)
-    level_shifter[2].dir.line ~ _power_3v3.lv #level_shifter[2].dir.reference.lv
+    level_shifter[2].dir.line ~ level_shifter[2].dir.reference_shim.lv
     swd.swo ~ jtag.tdo
     jtag.tdo.line.override_net_name = "TDO_SWO"
 
@@ -175,7 +175,7 @@ module RPDAPBase:
     mcu.gpio[15] ~ level_shifter[3].a
     level_shifter[3].b ~ jtag.n_reset
     # DIR = High (MCU->Target)
-    level_shifter[3].dir.line ~ _power_3v3.hv #level_shifter[3].dir.reference.hv
+    level_shifter[3].dir.line ~ level_shifter[3].dir.reference_shim.hv
     swd.reset ~ jtag.n_reset
     jtag.n_reset.line.override_net_name = "nRESET"
 
@@ -183,28 +183,28 @@ module RPDAPBase:
     mcu.gpio[13] ~ level_shifter[4].a
     level_shifter[4].b ~ jtag.tdi
     # DIR = HIGH (MCU->Target)
-    level_shifter[4].dir.line ~ _power_3v3.hv #level_shifter[4].dir.reference.hv
+    level_shifter[4].dir.line ~ level_shifter[4].dir.reference_shim.hv
     jtag.tdi.line.override_net_name = "TDI"
 
     # UART0 TX (MCU -> target)
     mcu.uart.tx ~ level_shifter[5].a
     level_shifter[5].b ~ uart.tx
     # DIR = High (MCU->Target)
-    level_shifter[5].dir.line ~ _power_3v3.hv #level_shifter[5].dir.reference.hv
+    level_shifter[5].dir.line ~ level_shifter[5].dir.reference_shim.hv
 
     # UART0 RX (target -> MCU)
     mcu.uart.rx ~ level_shifter[6].a
     level_shifter[6].b ~ uart.rx
     # DIR = Low (Target->MCU)
-    level_shifter[6].dir.line ~ _power_3v3.lv #level_shifter[6].dir.reference.lv
+    level_shifter[6].dir.line ~ level_shifter[6].dir.reference_shim.lv
 
     # Power indicator
     power_3v3_indicator.power ~ _power_3v3
 
     # VCP status indicator
-    mcu.gpio[2].line ~> vcp_indicator ~> mcu.gpio[2].reference.lv
+    mcu.gpio[2].line ~> vcp_indicator ~> mcu.gpio[2].reference_shim.lv
 
     # --- Net names ---
     _power_3v3.hv.override_net_name = "3V3"
-    _power_3v3.lv.override_net_name = "GND"
+    _power_3v3.lv.suggest_net_name = "GND"
     _power_vbus.hv.override_net_name = "Vbus_fused"
