@@ -38,3 +38,7 @@ There are various layouts and standalone boards available:
 
 The firmware for the debugger is available in the [free-dap](https://github.com/ruben-iteng/free-dap/releases/latest) repository.
 Follow this standard RP2040 flashing procedure to flash the firmware.
+
+### Enclosures
+
+This RPDAP Stick has a build in enclosure in the design (part of the PCB), and the RPDAP Compact board has a [3D printable enclosure](./cad/README.md) available.
